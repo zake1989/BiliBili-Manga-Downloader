@@ -55,6 +55,7 @@ class SettingUI(QObject):
         self.init_checkUpdate()
         self.init_theme()
         self.init_exif_setting()
+        self.init_save_meta_setting()
         self.qr_ui = QrCodeUI()
 
     ############################################################
@@ -206,7 +207,7 @@ class SettingUI(QObject):
             self.mainGUI.lineEdit_biliplus_cookie.setText(stored_cookie)
 
         def _() -> None:
-            new_cookie = self.mainGUI.lineEdit_biliplus_cookie.text()
+            new_cookie = self.mainGUI.lineEdit_biliplus_cookie.text().strip()
             if new_cookie == "":
                 QMessageBox.information(self.mainGUI, "提示", "请输入Cookie！")
                 return
@@ -258,6 +259,7 @@ class SettingUI(QObject):
                 return False
             else:
                 return False
+
         try:
             result = _()
             if None is result:
@@ -492,8 +494,10 @@ class SettingUI(QObject):
     ############################################################
 
     def init_exif_setting(self) -> None:
-        if self.mainGUI.getConfig("exif") is not None:
-            self.mainGUI.checkBox_exif_info.setChecked(self.mainGUI.getConfig("exif"))
+        """绑定EXIF信息设置"""
+        flag = self.mainGUI.getConfig("exif")
+        if flag is not None:
+            self.mainGUI.checkBox_exif_info.setChecked(flag)
         else:
             self.mainGUI.updateConfig("exif", True)
 
@@ -501,3 +505,18 @@ class SettingUI(QObject):
             self.mainGUI.updateConfig("exif", checked)
 
         self.mainGUI.checkBox_exif_info.toggled.connect(_)
+
+    ############################################################
+
+    def init_save_meta_setting(self) -> None:
+        """绑定保存元数据设置"""
+        flag = self.mainGUI.getConfig("save_meta")
+        if flag is not None:
+            self.mainGUI.checkBox_save_meta.setChecked(flag)
+        else:
+            self.mainGUI.updateConfig("save_meta", True)
+
+        def _(checked: bool) -> None:
+            self.mainGUI.updateConfig("save_meta", checked)
+
+        self.mainGUI.checkBox_save_meta.toggled.connect(_)
